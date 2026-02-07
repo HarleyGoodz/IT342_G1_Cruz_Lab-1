@@ -1,16 +1,16 @@
-Task:
+Task Checklist
 
-IN PROGRESS: 
+DONE
+- Github repository - commit: `dd8b41c`
+- Spring Boot setup - commit: `dd8b41c`
+- ReactJS setup - commit: `dd8b41c`
 
-1. Login Page UI 
-2. Registration Page UI 
-3. Dashboard Page 
-4. Backend 
-5. Database set up 
+IN-PROGRESS
+- Login Page UI
+- Registration Page UI
+- Dashboard Page
+- Backend development
+- Database setup
 
-DONE:
-
-1. Github repository
-2. Springboot set up
-3. ReactJS set up
-
+TODO
+- MySQL database
