@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/dashboard_css.css";
 
@@ -6,10 +6,37 @@ function Dashboard() {
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [user, setUser] = useState(null);
 
-  const handleLogout = () => {
+  // 🔐 Check session when dashboard loads
+  useEffect(() => {
+    fetch("http://localhost:8080/api/auth/me", {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Not authenticated");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setUser(data);
+      })
+      .catch(() => {
+        navigate("/");
+      });
+  }, [navigate]);
+
+  const handleLogout = async () => {
     const confirmed = window.confirm("Are you sure you want to logout?");
-    if (confirmed) {
+    if (!confirmed) return;
+
+    try {
+      await fetch("http://localhost:8080/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
       navigate("/");
     }
   };
@@ -94,27 +121,31 @@ function Dashboard() {
 
       {/* Main Content */}
       <main className="main-content">
-        {/* Header */}
         <header className="dashboard-header">
           <div className="header-content">
             <div>
-              <h1 className="page-title">Welcome back, User</h1>
-              <p className="page-subtitle">Here's what's happening with your projects today</p>
+              <h1 className="page-title">
+                Welcome back, {user ? user.username : "User"}
+              </h1>
+              <p className="page-subtitle">
+                Here's what's happening with your projects today
+              </p>
             </div>
             <div className="header-actions">
               <button className="icon-btn notification-btn">
                 <span className="notification-badge">3</span>
                 🔔
               </button>
-              <div className="user-avatar">U</div>
+              <div className="user-avatar">
+                {user ? user.username.charAt(0).toUpperCase() : "U"}
+              </div>
             </div>
           </div>
         </header>
 
-        {/* Stats Grid */}
         <section className="stats-grid">
           {stats.map((stat, index) => (
-            <div key={index} className="stat-card" style={{ animationDelay: `${index * 0.1}s` }}>
+            <div key={index} className="stat-card">
               <div className="stat-icon">{stat.icon}</div>
               <div className="stat-content">
                 <p className="stat-label">{stat.label}</p>
@@ -127,9 +158,7 @@ function Dashboard() {
           ))}
         </section>
 
-        {/* Charts and Activity Grid */}
         <section className="content-grid">
-          {/* Chart Card */}
           <div className="chart-card">
             <div className="card-header">
               <h3 className="card-title">Revenue Overview</h3>
@@ -139,29 +168,9 @@ function Dashboard() {
                 <option>Last 90 days</option>
               </select>
             </div>
-            <div className="chart-placeholder">
-              <div className="chart-bars">
-                <div className="bar" style={{ height: "60%" }}></div>
-                <div className="bar" style={{ height: "80%" }}></div>
-                <div className="bar" style={{ height: "45%" }}></div>
-                <div className="bar" style={{ height: "90%" }}></div>
-                <div className="bar" style={{ height: "70%" }}></div>
-                <div className="bar" style={{ height: "85%" }}></div>
-                <div className="bar" style={{ height: "95%" }}></div>
-              </div>
-              <div className="chart-labels">
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
-                <span>Sat</span>
-                <span>Sun</span>
-              </div>
-            </div>
+            <div className="chart-placeholder"></div>
           </div>
 
-          {/* Recent Activity Card */}
           <div className="activity-card">
             <div className="card-header">
               <h3 className="card-title">Recent Activity</h3>
@@ -169,7 +178,7 @@ function Dashboard() {
             </div>
             <div className="activity-list">
               {recentActivities.map((activity, index) => (
-                <div key={index} className="activity-item" style={{ animationDelay: `${0.5 + index * 0.1}s` }}>
+                <div key={index} className="activity-item">
                   <div className="activity-icon">{activity.icon}</div>
                   <div className="activity-content">
                     <p className="activity-action">{activity.action}</p>
@@ -178,29 +187,6 @@ function Dashboard() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* Quick Actions */}
-        <section className="quick-actions">
-          <h3 className="section-title">Quick Actions</h3>
-          <div className="action-buttons">
-            <button className="action-btn">
-              <span className="action-icon">➕</span>
-              Create Project
-            </button>
-            <button className="action-btn">
-              <span className="action-icon">📝</span>
-              New Task
-            </button>
-            <button className="action-btn">
-              <span className="action-icon">👥</span>
-              Invite Team
-            </button>
-            <button className="action-btn">
-              <span className="action-icon">📊</span>
-              Generate Report
-            </button>
           </div>
         </section>
       </main>

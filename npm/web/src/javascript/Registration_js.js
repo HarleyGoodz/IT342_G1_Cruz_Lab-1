@@ -18,7 +18,7 @@ function Registration() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -26,8 +26,33 @@ function Registration() {
       return;
     }
 
-    console.log(formData);
-    alert("Registration submitted");
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          fName: formData.firstName,
+          lName: formData.lastName,
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      alert("Registration successful!");
+    } catch (err) {
+      alert("Registration failed: " + err.message);
+    }
   };
 
   return (

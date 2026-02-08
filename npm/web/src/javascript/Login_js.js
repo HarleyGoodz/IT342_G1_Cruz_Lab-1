@@ -1,23 +1,46 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // ✅ useNavigate added
+import { Link, useNavigate } from "react-router-dom";
 import "../css/login_css.css";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // ✅ get the navigate function
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Placeholder logic
-    console.log("Username:", username);
-    console.log("Email:", email);
-    console.log("Password:", password);
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: email || username,
+          password: password,
+        }),
+      });
 
-    // ✅ Navigate to dashboard
-    navigate("/dashboard");
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      // ✅ only redirect if backend confirms login is valid
+      if (data.success === true) {
+        navigate("/dashboard");
+      } else {
+        alert("Invalid email/username or password");
+      }
+    } catch (err) {
+      alert("Login failed: " + err.message);
+    }
   };
 
   return (
@@ -32,7 +55,6 @@ function Login() {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
           />
         </div>
 
@@ -41,7 +63,6 @@ function Login() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
         />
 
         <input

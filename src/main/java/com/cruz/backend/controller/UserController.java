@@ -43,7 +43,7 @@ public class UserController {
             String input = loginData.getEmail(); // can be email or fullname
             String password = loginData.getPassword();
  
-            Optional<User> userOpt = userv.findByEmailOrFullname(input);
+            Optional<User> userOpt = userv.findByEmailOrUsername(input);
  
             if (userOpt.isEmpty()) {
                 return ResponseEntity.status(404).body("User not found");
