@@ -9,6 +9,6 @@ import com.cruz.backend.entity.User;
  
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    Optional<User> findByEmailAddress(String emailAddress);
-    Optional<User> findByFullname(String fullname);
+    Optional<User> findByEmail(String email);
+    Optional<User> findByUsername(String username);
 }
