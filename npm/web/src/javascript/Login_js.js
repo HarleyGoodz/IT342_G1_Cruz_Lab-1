@@ -32,12 +32,9 @@ function Login() {
       const data = await response.json();
       console.log(data);
 
-      // ✅ only redirect if backend confirms login is valid
-      if (data.success === true) {
-        navigate("/dashboard");
-      } else {
-        alert("Invalid email/username or password");
-      }
+      if (response.ok) {
+  navigate("/dashboard");
+}
     } catch (err) {
       alert("Login failed: " + err.message);
     }

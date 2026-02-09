@@ -42,4 +42,9 @@ public class UserService {
         if (user == null || rawPassword == null) return false;
         return rawPassword.equals(user.getPassword());
     }
+
+    public Optional<User> findById(Integer id) {
+    return urepo.findById(id);
+}
+
 }

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import "../css/registration_css.css";
+import { useNavigate } from "react-router-dom";
 
 function Registration() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -49,7 +51,8 @@ function Registration() {
 
       const data = await response.json();
       console.log(data);
-      alert("Registration successful!");
+      alert("Registration successful! Please log in.");
+      navigate("/");
     } catch (err) {
       alert("Registration failed: " + err.message);
     }
